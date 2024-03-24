@@ -66,7 +66,7 @@ public class SnakeAndLadderGame implements Game {
     }
 
     private boolean checkForWinner(int position){
-        return position >= size ;
+        return position == size ;
     }
 
     private int getPositionOnSnakeOrLadder(int currentPosition){
@@ -89,6 +89,11 @@ public class SnakeAndLadderGame implements Game {
             System.out.println(currentPiece.getPlayer() + " played, dice roll is "+ steps);
             int currentPosition = currentPiece.getPosition() ;
             int nextPosition = currentPiece.getPosition() + steps ;
+            if (nextPosition > size){
+                // player staying at current position, if overshooting the finish
+                currentPlayer = (currentPlayer + 1)%4 ;
+                continue;
+            }
             if(checkForWinner(nextPosition)){
                 System.out.println(currentPiece.getPlayer() + " won the game!!!");
                 break ;
