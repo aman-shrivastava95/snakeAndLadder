@@ -2,13 +2,16 @@ package org.snakeLadder;
 
 import org.snakeLadder.models.Cell;
 import org.snakeLadder.models.CellState;
+import org.snakeLadder.models.Dice;
 import org.snakeLadder.models.UserPiece;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Random;
 
 public class SnakeAndLadderGame implements Game {
 
+    private final int size = 100; 
     Cell[] board  ;
     UserPiece[] userPieces ;
 
@@ -20,8 +23,8 @@ public class SnakeAndLadderGame implements Game {
             String ladderPositionString = gameConfig.getProperty("ladder_points") ;
             String[] snakePoints = snakePositionString.split(",");
             String[] ladderPoints = ladderPositionString.split(",");
-            board =  new Cell[101] ;
-            for (int i = 1; i< 101; i++){
+            board =  new Cell[size] ;
+            for (int i = 1; i< size; i++){
                 board[i] = new Cell(i, -1, CellState.EMPTY);
             }
             //setup snakes
@@ -45,13 +48,53 @@ public class SnakeAndLadderGame implements Game {
             throw new RuntimeException(e);
         }
     }
+    
+    private void setupPlayers(int playerCount){
+        if(playerCount > 4){
+            System.out.println("Player count cannot be more than 4");
+        } 
+        userPieces = new UserPiece[playerCount] ;
+        for (int i =1 ; i<= playerCount ;i++ ){
+            userPieces[i-1] = new UserPiece(0,"Player-"+i);
+        }
+    }
+    
     public SnakeAndLadderGame(int playerCount){
-        this.board = new Cell[101] ;
+        this.board = new Cell[size] ;
         setupBoard() ;
+        setupPlayers(playerCount) ;
+    }
+
+    private boolean checkForWinner(int position){
+        return position >= size ;
+    }
+
+    private int getPositionOnSnakeOrLadder(int currentPosition){
+        Cell cell = board[currentPosition] ;
+        int nextPostion = currentPosition ;
+        if(cell.getState().equals(CellState.SNAKE) || cell.getState().equals(CellState.LADDER)){
+            nextPostion  = cell.getNextPosition();
+        }
+        return nextPostion ;
     }
 
     @Override
     public void startGame() {
-
+        Random random =  new Random() ;
+        Dice dice =  new Dice(6, random) ;
+        int currentPlayer = random.nextInt(4) ;
+        while(true){
+            int steps = dice.rollDice() ;
+            UserPiece currentPiece = userPieces[currentPlayer] ;
+            int nextPosition = currentPiece.getPosition() + steps ;
+            if(checkForWinner(nextPosition)){
+                System.out.println(currentPiece.getPlayer() + " won the game!!!");
+                break ;
+            }
+            nextPosition = getPositionOnSnakeOrLadder(nextPosition);
+            currentPiece.setPosition(nextPosition);
+            System.out.println(currentPiece.getPlayer() + " moved to " + currentPiece.getPosition());
+            currentPlayer = (currentPlayer + 1)%4 ;
+        }
     }
 }
