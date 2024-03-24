@@ -86,6 +86,8 @@ public class SnakeAndLadderGame implements Game {
         while(true){
             int steps = dice.rollDice() ;
             UserPiece currentPiece = userPieces[currentPlayer] ;
+            System.out.println(currentPiece.getPlayer() + " played, dice roll is "+ steps);
+            int currentPosition = currentPiece.getPosition() ;
             int nextPosition = currentPiece.getPosition() + steps ;
             if(checkForWinner(nextPosition)){
                 System.out.println(currentPiece.getPlayer() + " won the game!!!");
@@ -93,7 +95,7 @@ public class SnakeAndLadderGame implements Game {
             }
             nextPosition = getPositionOnSnakeOrLadder(nextPosition);
             currentPiece.setPosition(nextPosition);
-            System.out.println(currentPiece.getPlayer() + " moved to " + currentPiece.getPosition());
+            System.out.println(currentPiece.getPlayer() + " moved from " + currentPosition + " to " + currentPiece.getPosition()  );
             currentPlayer = (currentPlayer + 1)%4 ;
         }
     }
